@@ -1,3 +1,6 @@
+import matplotlib.pyplot as plt
+import math
+
 def RKF(f, tk, yk, h):
     k1 = h * f(tk, yk)
     k2 = h * f(tk + h/4, yk + k1/4)
@@ -9,3 +12,17 @@ def RKF(f, tk, yk, h):
     zkk = yk + 16*k1/135 + 6656*k3/12825 + 28561*k4/56430 - 9*k5/50 + 2*k6/55
     s = (h / (2 * abs(zkk - ykk)))**0.25
     return ykk, s*h
+
+def ftest(tk, yk):
+    return 1 + yk**2
+deltaT = 0.01
+X = [k*deltaT for k in range(100)]
+Yref = [math.tan(t) for t in X]
+Ytest = [0.0]
+h = deltaT
+for t in X[:-1]:
+    ykk, hkk = RKF(ftest, t, Ytest[-1], h)
+    Ytest.append(ykk)
+plt.plot(X, Yref, color='blue', label='tan')
+plt.plot(X, Ytest, color='red', label='RKF')
+plt.show()
