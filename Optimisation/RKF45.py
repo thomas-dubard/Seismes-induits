@@ -1,17 +1,18 @@
 import time
+import numpy as np
 
-def RKF(f, yk, h=1e-2, dtmin=1e-16, dtmax=1e2, tol=1e-10):
+def RKF(f, yk: np.ndarray, h=1e-2, dtmin=1e-16, dtmax=1e2, tol=1e-10) -> (np.ndarray, float):
     """
     Cette fonction vise à résoudre une équation différentielle vectorielle.
     Elle utilise la méthode Runge-Kutta-Fehlberg d'ordre 5.
     Cela permet d'adapter le pas de temps pour avoir une meilleure précision.
     """
     K = 0
-    t0 = time.time()
+    #t0 = time.time()
     if h > dtmax:
         #Cela empêche la fonction de marcher si c'est le cas.
         h = dtmax/2
-    s = 1.
+    s = 1. #coefficient multiplicateur pour adapter le pas de temps
     ykk = yk
     while s*h < dtmax and K < 30:
         k1 = h * f(yk)
@@ -23,13 +24,13 @@ def RKF(f, yk, h=1e-2, dtmin=1e-16, dtmax=1e2, tol=1e-10):
         ykk = yk + 25*k1/216 + 1408*k3/2565 + 2197*k4/4104 - k5/5
         #print('ykk='+str(ykk))
         zkk = yk + 16*k1/135 + 6656*k3/12825 + 28561*k4/56430 - 9*k5/50 + 2*k6/55
-        erreur = np.linalg.norm(zkk - ykk)
-        tf = time.time()
+        erreur = np.linalg.norm(zkk - ykk) #norme 2
+        #tf = time.time()
         K = K + 1
         s = (tol / (2 * erreur))**0.25
-        print(erreur)
-        print(K)
-        if erreur < tol:
+        #print(erreur)
+        #print(K)
+        if erreur < tol: #déterminant pour le nombre d'itérations
             #print(tf-t0)
             return ykk, s*h
         if s*h < dtmin:

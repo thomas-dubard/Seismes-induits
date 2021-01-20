@@ -1,7 +1,9 @@
 import numpy as np
 
+from init import *
+
 ##Calcul du gradient de la transformée de Hilbert (cf. doc)
-def noyau(freq,H) :
+def noyau(freq: np.ndarray,H: float) -> np.ndarray:
     """
     Optimisée d'un facteur 100 par Quentin Guitet
     """
@@ -12,7 +14,7 @@ def noyau(freq,H) :
     freq[pos] = 0 #on met des zéros aux positions des zéros du tableau de départ
     return freq
 
-def Psi(f, deltaX, H) :
+def Psi(f: np.ndarray, deltaX: float, H: float) -> np.ndarray:
     F=np.fft.fft(f)
     freq=np.fft.fftfreq(len(f),deltaX)
     K = noyau(freq, H)
@@ -24,6 +26,9 @@ def Psi(f, deltaX, H) :
 
 ##Système différentiel
 def phidot(phi, nu):
+    """
+    Calcul du premier terme du système différentiel adimensionné
+    """
     v = np.exp(phi)
     vm = np.mean(v)
     theta = np.exp(nu)
@@ -34,11 +39,17 @@ def phidot(phi, nu):
     return np.concatenate((phid1[0:K1], phid2[K1:K2+1], phid1[K2+1:]))
 
 def nudot(phi, nu):
+    """
+    Calcul du premier terme du système différentiel adimensionné
+    """
     v = np.exp(phi)
     theta = np.exp(nu)
     return 1/theta - v
 
 def F(y):
+    """
+    Calcul du système différentiel
+    """
     phi = y[0]
     nu = y[1]
     F1 = phidot(phi, nu)

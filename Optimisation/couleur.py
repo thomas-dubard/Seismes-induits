@@ -1,4 +1,4 @@
-def wavelength_to_rgb(wavelength, gamma=0.8):
+def wavelength_to_rgb(wavelength: float, gamma=0.8) -> (float, float, float):
 
     '''This converts a given wavelength of light to an
     approximate RGB color value. The wavelength must be given

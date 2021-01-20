@@ -1,3 +1,31 @@
+import numpy as np
+
+##Paramètres
+mu = 30e9
+sigma = 100e6
+rho = 2400
+
+a1 = 2e-3
+a2 = 2e-4
+b = 1e-3
+v0 = 1e-9
+dc = 1e-3
+
+eta = np.sqrt(mu*rho/2) #=6000000
+Lb = mu*dc/(b*sigma) #=300
+
+deltaX = int(Lb/4)
+N = 1000
+I = 2**9
+L = I * deltaX
+H = 2*L
+h = 1e-2
+
+alpha1 = a1/b
+alpha2 = a2/b
+beta = eta*v0/(b*sigma) #=6e-08
+gamma = mu*dc/(b*sigma*H)
+
 ##Conditions initiales
 x = np.arange(-L//2, L//2 + 1, deltaX)
 d = L//8 #largeur de la zone de glissement initiale
@@ -6,7 +34,11 @@ temps = np.array([0])
 K1 = (L//2-d)//deltaX
 K2 = (L//2+d)//deltaX
 
-def cond_init(forme):
+def cond_init(forme: str) -> (list, list):
+    """
+    Cette fonction permet de choisir le profil de condition initiale.
+    Elle est déterminée aussi par les constantes ci-dessus.
+    """
     if forme == "elliptique":
         #Elliptique
         Ae = []
@@ -36,7 +68,7 @@ def cond_init(forme):
         Ac = np.array(Ac)
         Bc = 1/Ac
         return Ac, Bc
-    if forme == "uniforme"
+    if forme == "uniforme":
         #Uniforme
         Au = np.ones(I+1)*amp
         Bu = 1/Au
