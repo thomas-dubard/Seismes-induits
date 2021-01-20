@@ -47,7 +47,7 @@ def resolution(CIv: list, CIThau: list, N: int, I: int, report: bool, courbe: bo
     Thau, Delta = [[0]*len(Phi[0])], [[0]*len(Phi[0])]
     max_Phi , max_Nu = max(Phi[0]), max(Nu[0])
     max_Thau, max_Delta = max(Thau[0]), max(Delta[0])
-    temps = np.array([0])
+    temps = np.array([1e-2])
 
     if courbe:
         #Initialisation des courbes si on les affiche
