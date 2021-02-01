@@ -43,8 +43,8 @@ def resolution(CIv: list, CIThau: list, N: int, I: int, report: bool, courbe: bo
     t_res0 = time.time()
     phik, nuk = np.log(CIv), np.log(CIThau)
     yk = np.array([phik, nuk])
-    Phi, Nu = [phik], [nuk]
-    Thau, Delta = [[0]*len(Phi[0])], [[0]*len(Phi[0])]
+    Phi, Nu = np.array([phik]), np.array([nuk])
+    Thau, Delta = np.array([[0]*len(Phi[0])]), np.array([[0]*len(Phi[0])])
     max_Phi , max_Nu = max(Phi[0]), max(Nu[0])
     max_Thau, max_Delta = max(Thau[0]), max(Delta[0])
     temps = np.array([1e-2])
@@ -71,37 +71,39 @@ def resolution(CIv: list, CIThau: list, N: int, I: int, report: bool, courbe: bo
             res = RKF(F, yk)
         else:
             res = RKF(F, yk, h)
-        yk, h = res[0], res[1]
-        temps = np.concatenate((temps, [temps[n]+h]))
+        yk, h = np.array(res[0]), np.array([res[1]])
+        print(yk.shape)
+        np.append(temps, temps[-1] + h)
 
-        Phi.append(yk[0])
-        Nu.append(yk[1])
+        np.append(Phi, yk[0])
+        np.append(Nu, yk[1])
         if n >= 1:
             #Thau et Delta sont des variables intégrales.
             #Il faut donc au moins deux valeurs précédentes pour les calculer.
             #On les calcule avec la méthode des rectangles à gauche.
-            vnn = np.exp(Phi[n])
-            vn = np.exp(Phi[n-1])
-            tnn = np.exp(Nu[n])
-            tn = np.exp(Nu[n-1])
-            Thau.append([Thau[n-1][y] + (a1*np.log(vnn[y]/vn[y]) + b*np.log(tnn[y]/tn[y]))/(temps[n] - temps[n-1]) for y in range(I+1)])
-            Delta.append([Delta[n-1][y] + (vnn[y] - vn[y])/(temps[n] - temps[n-1]) for y in range(I+1)])
+            print(Phi.shape)
+            print(n)
+            vnn = np.exp(Phi)[n]
+            vn = np.exp(Phi)[n-1]
+            tnn = np.exp(Nu)[n]
+            tn = np.exp(Nu)[n-1]
+            pente = (temps[n] - temps[n-1])
+            Delta_Thau = a1*np.log(vnn) - a1*np.log(vn) + b*np.log(tnn) - b*np.log(tn)
+            Delta_Delta = 0.5 * (vnn + vn)
+            np.append(Thau, Thau[n-1] + pente * Delta_Thau)
+            np.append(Delta, Delta[n-1] + pente * Delta_Delta)
 
         if n%100000 == 0 and export:
             #On va régulièrement exporter les variables de calcul.
             #Cela permet de les formater et donc les "alléger".
-            numpyPhi = np.array(Phi)
-            np.savetxt(f"Phi-{rep(n, N)}.csv", numpyPhi, delimiter=',')
-            Phi = [Phi[-1]]
-            numpyNu = np.array(Nu)
-            np.savetxt(f"Nu-{rep(n, N)}.csv", numpyNu, delimiter=',')
-            Nu = [Nu[-1]]
-            numpyThau = np.array(Thau)
-            np.savetxt(f"Thau-{rep(n, N)}.csv", numpyThau, delimiter=',')
-            Thau = [Thau[-1]]
-            numpyDelta = np.array(Delta)
-            np.savetxt(f"Delta-{rep(n, N)}.csv", numpyDelta, delimiter=',')
-            Delta = [Delta[-1]]
+            np.savetxt(f"Phi-{rep(n, N)}.csv", Phi, delimiter=',')
+            Phi = np.array([Phi[-1]])
+            np.savetxt(f"Nu-{rep(n, N)}.csv", Nu, delimiter=',')
+            Nu = np.array([Nu[-1]])
+            np.savetxt(f"Thau-{rep(n, N)}.csv", Thau, delimiter=',')
+            Thau = np.array([Thau[-1]])
+            np.savetxt(f"Delta-{rep(n, N)}.csv", Delta, delimiter=',')
+            Delta = np.array([Delta[-1]])
 
         if n%(N//1000) == 0 and animate:
             #On exporte 1000 clichés de l'évolution des variables.

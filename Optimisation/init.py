@@ -34,7 +34,7 @@ temps = np.array([0])
 K1 = (L//2-d)//deltaX
 K2 = (L//2+d)//deltaX
 
-def cond_init(forme: str) -> (list, list):
+def cond_init(forme: str) -> (np.ndarray, np.ndarray):
     """
     Cette fonction permet de choisir le profil de condition initiale.
     Elle est déterminée aussi par les constantes ci-dessus.
