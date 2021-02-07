@@ -1,1 +1,8 @@
+abs : absolute magnitude
+var : relative variation in magnitude
 
+rate : the parameter is Q the pressure rate
+cycle : the parameter is the percentage of seismic cycle covered
+
+The first number is the value of a outside of the asperity
+The second number following q is the value of q chosen for all injections
